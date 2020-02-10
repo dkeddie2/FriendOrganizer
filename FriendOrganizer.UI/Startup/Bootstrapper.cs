@@ -4,6 +4,7 @@
     using FriendOrganizer.DataAccess;
     using FriendOrganizer.UI.Data;
     using FriendOrganizer.UI.ViewModel;
+    using Prism.Events;
 
     public class Bootstrapper
     {
@@ -11,6 +12,8 @@
         {
             // setting up Autofac stuff
             var builder = new ContainerBuilder();
+
+            builder.RegisterType<EventAggregator>().As<IEventAggregator>().SingleInstance();
 
             builder.RegisterType<FriendOrganizerDbContext>().AsSelf();
 

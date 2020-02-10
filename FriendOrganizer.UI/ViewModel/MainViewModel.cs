@@ -7,6 +7,7 @@
         public MainViewModel(INavigationViewModel navigationViewModel, IFriendDetailViewModel friendDetailViewModel)
         {
             this.NavigationViewModel = navigationViewModel;
+            this.FriendDetailViewModel = friendDetailViewModel;
         }
 
         public INavigationViewModel NavigationViewModel { get; }

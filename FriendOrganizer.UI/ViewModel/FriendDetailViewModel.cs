@@ -39,6 +39,14 @@
         {
             var friend = await dataService.GetByIdAsync(friendId);
             Friend = new FriendWrapper(friend);
+
+            Friend.PropertyChanged += (s, e) =>
+            {
+                if (e.PropertyName == nameof(Friend.HasErrors))
+                {
+                    ((DelegateCommand)SaveCommand).RaiseCanExecuteChanged();
+                }
+            };
         }
 
         private async void OnOpenFriendDetailView(int friendId)
@@ -48,8 +56,7 @@
 
         private bool OnSaveCanExecute()
         {
-            // TODO: Validate input
-            return true;
+            return Friend != null && !Friend.HasErrors;
         }
 
         private async void OnSaveExecute()

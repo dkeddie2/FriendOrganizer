@@ -1,11 +1,10 @@
 ﻿namespace FriendOrganizer.UI.ViewModel
 {
-    using System;
     using System.Threading.Tasks;
     using System.Windows.Input;
-    using FriendOrganizer.Model;
     using FriendOrganizer.UI.Data;
     using FriendOrganizer.UI.Event;
+    using FriendOrganizer.UI.Wrapper;
     using Prism.Commands;
     using Prism.Events;
 
@@ -13,7 +12,7 @@
     {
         private IFriendDataService dataService;
         private IEventAggregator eventAggregator;
-        private Friend friend;
+        private FriendWrapper friend;
 
         public FriendDetailViewModel(IFriendDataService dataService, IEventAggregator eventAggregator)
         {
@@ -24,17 +23,7 @@
             SaveCommand = new DelegateCommand(OnSaveExecute, OnSaveCanExecute);
         }
 
-        private async void OnOpenFriendDetailView(int friendId)
-        {
-            await LoadAsync(friendId);
-        }
-
-        public async Task LoadAsync(int friendId)
-        {
-            Friend = await dataService.GetByIdAsync(friendId);
-        }
-
-        public Friend Friend
+        public FriendWrapper Friend
         {
             get { return friend; }
             private set
@@ -44,16 +33,17 @@
             }
         }
 
-        private async void OnSaveExecute()
+        public ICommand SaveCommand { get; }
+
+        public async Task LoadAsync(int friendId)
         {
-            await dataService.SaveAsync(Friend);
-            eventAggregator.GetEvent<AfterFriendSavedEvent>()
-                .Publish(
-                new AfterFriendSavedEventArgs
-                {
-                    Id = Friend.Id,
-                    DisplayMember = $"{Friend.FirstName} {Friend.LastName}",
-                });
+            var friend = await dataService.GetByIdAsync(friendId);
+            Friend = new FriendWrapper(friend);
+        }
+
+        private async void OnOpenFriendDetailView(int friendId)
+        {
+            await LoadAsync(friendId);
         }
 
         private bool OnSaveCanExecute()
@@ -62,6 +52,16 @@
             return true;
         }
 
-        public ICommand SaveCommand { get; }
+        private async void OnSaveExecute()
+        {
+            await dataService.SaveAsync(Friend.Model);
+            eventAggregator.GetEvent<AfterFriendSavedEvent>()
+                .Publish(
+                new AfterFriendSavedEventArgs
+                {
+                    Id = Friend.Id,
+                    DisplayMember = $"{Friend.FirstName} {Friend.LastName}",
+                });
+        }
     }
 }

@@ -2,7 +2,9 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Data.Entity;
     using System.Linq;
+    using System.Threading.Tasks;
     using FriendOrganizer.DataAccess;
     using FriendOrganizer.Model;
 
@@ -15,11 +17,13 @@
             this.contextCreator = contextCreator;
         }
 
-        public IEnumerable<Friend> GetAll()
+        public async Task<List<Friend>> GetAllAsync()
         {
             using (var ctx = new FriendOrganizerDbContext())
             {
-                return ctx.Friends.AsNoTracking().ToList();
+                var friends = await ctx.Friends.AsNoTracking().ToListAsync();
+                await Task.Delay(5000);
+                return friends;
             }
         }
     }

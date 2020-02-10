@@ -1,7 +1,8 @@
 ﻿namespace FriendOrganizer.UI
 {
     using System.Windows;
-    using FriendOrganizer.UI.Data;
+    using Autofac;
+    using FriendOrganizer.UI.Startup;
 
     /// <summary>
     /// Interaction logic for App.xaml
@@ -10,10 +11,10 @@
     {
         private void Application_Startup(object sender, StartupEventArgs e)
         {
-            var mainWindow = new MainWindow(
-                new ViewModel.MainViewModel(
-                    new FriendDataService()));
+            var bootstrapper = new Bootstrapper();
+            var container = bootstrapper.Bootstrap();
 
+            var mainWindow = container.Resolve<MainWindow>();
             mainWindow.Show();
         }
     }

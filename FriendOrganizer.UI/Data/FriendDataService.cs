@@ -19,7 +19,7 @@
 
         public async Task<List<Friend>> GetAllAsync()
         {
-            using (var ctx = new FriendOrganizerDbContext())
+            using (var ctx = contextCreator())
             {
                 var friends = await ctx.Friends.AsNoTracking().ToListAsync();
                 await Task.Delay(5000);

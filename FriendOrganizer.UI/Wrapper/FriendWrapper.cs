@@ -8,9 +8,8 @@ using FriendOrganizer.UI.ViewModel;
 
 namespace FriendOrganizer.UI.Wrapper
 {
-    public class FriendWrapper : ViewModelBase, INotifyDataErrorInfo
+    public class FriendWrapper : NotifyDataErrorInfoBase
     {
-        private Dictionary<string, List<string>> errorsByPropertyName = new Dictionary<string, List<string>>();
 
         public FriendWrapper(Friend model)
         {
@@ -63,42 +62,6 @@ namespace FriendOrganizer.UI.Wrapper
                         AddError(propertyName, "Robots are not valid friends");
                     }
                     break;
-            }
-        }
-
-        public bool HasErrors => errorsByPropertyName.Any();
-
-        public event EventHandler<DataErrorsChangedEventArgs> ErrorsChanged;
-
-        public IEnumerable GetErrors(string propertyName)
-        {
-            return errorsByPropertyName.ContainsKey(propertyName) ? errorsByPropertyName[propertyName] : null;
-        }
-
-        private void OnErrorsChanged(string propertyName)
-        {
-            ErrorsChanged?.Invoke(this, new DataErrorsChangedEventArgs(propertyName));
-        }
-
-        private void AddError(string propertyName, string error)
-        {
-            if (errorsByPropertyName.ContainsKey(propertyName) == false)
-            {
-                errorsByPropertyName[propertyName] = new List<string>();
-            }
-            if (errorsByPropertyName[propertyName].Contains(error) == false)
-            {
-                errorsByPropertyName[propertyName].Add(error);
-                OnErrorsChanged(propertyName);
-            }
-        }
-
-        private void ClearErrors(string propertyName)
-        {
-            if (errorsByPropertyName.ContainsKey(propertyName))
-            {
-                errorsByPropertyName.Remove(propertyName);
-                OnErrorsChanged(propertyName);
             }
         }
     }

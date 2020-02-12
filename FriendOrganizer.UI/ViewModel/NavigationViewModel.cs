@@ -11,7 +11,6 @@
     {
         private IFriendLookupDataService friendLookupService;
         private IEventAggregator eventAggregator;
-        private NavigationItemViewModel selectedFriend;
 
         public NavigationViewModel(IFriendLookupDataService friendLookupService, IEventAggregator eventAggregator)
         {
@@ -23,20 +22,6 @@
 
         public ObservableCollection<NavigationItemViewModel> Friends { get; }
 
-        public NavigationItemViewModel SelectedFriend
-        {
-            get { return selectedFriend; }
-            set
-            {
-                selectedFriend = value;
-                OnPropertyChanged();
-                if (selectedFriend != null)
-                {
-                    eventAggregator.GetEvent<OpenFriendDetailViewEvent>().Publish(selectedFriend.Id);
-                }
-            }
-        }
-
         public async Task LoadAsync()
         {
             var lookup = await friendLookupService.GetFriendLookupAsync();
@@ -44,7 +29,7 @@
 
             foreach (var item in lookup)
             {
-                Friends.Add(new NavigationItemViewModel(item.Id, item.DisplayMember));
+                Friends.Add(new NavigationItemViewModel(item.Id, item.DisplayMember, eventAggregator));
             }
         }
 

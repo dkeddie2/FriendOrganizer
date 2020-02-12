@@ -22,6 +22,7 @@
             this.NavigationViewModel = navigationViewModel;
             this.friendDetailViewModelCreator = friendDetailViewModelCreator;
             this.eventAggregator.GetEvent<OpenFriendDetailViewEvent>().Subscribe(OnOpenFriendDetailView);
+            this.eventAggregator.GetEvent<AfterFriendDeletedEvent>().Subscribe(AfterFriendDeleted);
 
             CreateNewFriendCommand = new DelegateCommand(OnCreateNewFriendExecute);
         }
@@ -64,6 +65,11 @@
         private void OnCreateNewFriendExecute()
         {
             OnOpenFriendDetailView(null);
+        }
+
+        private void AfterFriendDeleted(int friendId)
+        {
+            FriendDetailViewModel = null;
         }
     }
 }

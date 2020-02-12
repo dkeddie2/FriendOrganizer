@@ -8,5 +8,7 @@
         Task<Friend> GetByIdAsync(int friendId);
 
         Task SaveAsync();
+
+        bool HasChanges();
     }
 }

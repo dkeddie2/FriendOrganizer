@@ -18,7 +18,6 @@
         {
             this.friendRepository = friendRepository;
             this.eventAggregator = eventAggregator;
-            this.eventAggregator.GetEvent<OpenFriendDetailViewEvent>().Subscribe(OnOpenFriendDetailView);
 
             SaveCommand = new DelegateCommand(OnSaveExecute, OnSaveCanExecute);
         }
@@ -33,6 +32,23 @@
             }
         }
 
+        private bool hasChanges;
+
+        public bool HasChanges
+        {
+            get { return hasChanges; }
+            set
+            {
+                if (hasChanges != value)
+                {
+                    hasChanges = value;
+                    OnPropertyChanged();
+                    ((DelegateCommand)SaveCommand).RaiseCanExecuteChanged();
+                }
+            }
+        }
+
+
         public ICommand SaveCommand { get; }
 
         public async Task LoadAsync(int friendId)
@@ -42,6 +58,11 @@
 
             Friend.PropertyChanged += (s, e) =>
             {
+                if (HasChanges == false)
+                {
+                    HasChanges = friendRepository.HasChanges();
+                }
+
                 if (e.PropertyName == nameof(Friend.HasErrors))
                 {
                     ((DelegateCommand)SaveCommand).RaiseCanExecuteChanged();
@@ -49,19 +70,16 @@
             };
         }
 
-        private async void OnOpenFriendDetailView(int friendId)
-        {
-            await LoadAsync(friendId);
-        }
-
         private bool OnSaveCanExecute()
         {
-            return Friend != null && !Friend.HasErrors;
+            return Friend != null && !Friend.HasErrors && HasChanges;
         }
 
         private async void OnSaveExecute()
         {
             await friendRepository.SaveAsync();
+            HasChanges = friendRepository.HasChanges();
+
             eventAggregator.GetEvent<AfterFriendSavedEvent>()
                 .Publish(
                 new AfterFriendSavedEventArgs

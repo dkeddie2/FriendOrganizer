@@ -23,5 +23,10 @@
         {
             await context.SaveChangesAsync();
         }
+
+        public bool HasChanges()
+        {
+            return context.ChangeTracker.HasChanges();
+        }
     }
 }

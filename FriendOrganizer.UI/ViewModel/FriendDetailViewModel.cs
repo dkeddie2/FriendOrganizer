@@ -6,6 +6,7 @@
     using FriendOrganizer.Model;
     using FriendOrganizer.UI.Data.Repositories;
     using FriendOrganizer.UI.Event;
+    using FriendOrganizer.UI.View.Services;
     using FriendOrganizer.UI.Wrapper;
     using Prism.Commands;
     using Prism.Events;
@@ -15,9 +16,11 @@
         private IFriendRepository friendRepository;
         private IEventAggregator eventAggregator;
         private FriendWrapper friend;
+        private readonly IMessageDialogService messageDialogService;
 
-        public FriendDetailViewModel(IFriendRepository friendRepository, IEventAggregator eventAggregator)
+        public FriendDetailViewModel(IFriendRepository friendRepository, IEventAggregator eventAggregator, IMessageDialogService messageDialogService)
         {
+            this.messageDialogService = messageDialogService;
             this.friendRepository = friendRepository;
             this.eventAggregator = eventAggregator;
 
@@ -114,9 +117,14 @@
 
         private async void OnDeleteExecute()
         {
-            friendRepository.Remove(Friend.Model);
-            await friendRepository.SaveAsync();
-            eventAggregator.GetEvent<AfterFriendDeletedEvent>().Publish(Friend.Id);
+            var result = messageDialogService.ShowOkCancelDialog("Do you really want to delete?", "Question");
+
+            if (result == MessageDialogResult.OK)
+            {
+                friendRepository.Remove(Friend.Model);
+                await friendRepository.SaveAsync();
+                eventAggregator.GetEvent<AfterFriendDeletedEvent>().Publish(Friend.Id);
+            }
         }
     }
 }

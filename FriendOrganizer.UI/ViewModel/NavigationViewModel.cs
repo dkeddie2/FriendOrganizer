@@ -35,7 +35,17 @@
 
         void AfterFriendSaved(AfterFriendSavedEventArgs obj)
         {
-            var lookupItem = Friends.Single(l => l.Id == obj.Id);
+            var lookupItem = Friends.SingleOrDefault(l => l.Id == obj.Id);
+
+            if (lookupItem == null)
+            {
+                Friends.Add(new NavigationItemViewModel(obj.Id, obj.DisplayMember, eventAggregator));
+            }
+            else
+            {
+                lookupItem.DisplayMember = obj.DisplayMember;
+            }
+
             lookupItem.DisplayMember = obj.DisplayMember;
         }
     }

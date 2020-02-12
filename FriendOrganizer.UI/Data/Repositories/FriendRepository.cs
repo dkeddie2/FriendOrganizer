@@ -28,5 +28,10 @@
         {
             return context.ChangeTracker.HasChanges();
         }
+
+        public void Add(Friend friend)
+        {
+            context.Friends.Add(friend);
+        }
     }
 }

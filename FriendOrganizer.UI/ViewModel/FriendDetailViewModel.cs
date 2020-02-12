@@ -1,7 +1,9 @@
 ﻿namespace FriendOrganizer.UI.ViewModel
 {
+    using System;
     using System.Threading.Tasks;
     using System.Windows.Input;
+    using FriendOrganizer.Model;
     using FriendOrganizer.UI.Data.Repositories;
     using FriendOrganizer.UI.Event;
     using FriendOrganizer.UI.Wrapper;
@@ -51,9 +53,13 @@
 
         public ICommand SaveCommand { get; }
 
-        public async Task LoadAsync(int friendId)
+        public async Task LoadAsync(int? friendId)
         {
-            var friend = await friendRepository.GetByIdAsync(friendId);
+
+            var friend = friendId.HasValue
+                ? await friendRepository.GetByIdAsync(friendId.Value)
+                : CreateNewFriend();
+
             Friend = new FriendWrapper(friend);
 
             Friend.PropertyChanged += (s, e) =>
@@ -68,6 +74,13 @@
                     ((DelegateCommand)SaveCommand).RaiseCanExecuteChanged();
                 }
             };
+
+            ((DelegateCommand)SaveCommand).RaiseCanExecuteChanged();
+            if (Friend.Id == 0)
+            {
+                // Little trick to trigger validation
+                Friend.FirstName = "";
+            }
         }
 
         private bool OnSaveCanExecute()
@@ -87,6 +100,13 @@
                     Id = Friend.Id,
                     DisplayMember = $"{Friend.FirstName} {Friend.LastName}",
                 });
+        }
+
+        private Friend CreateNewFriend()
+        {
+            var friend = new Friend();
+            friendRepository.Add(friend);
+            return friend;
         }
     }
 }

@@ -10,5 +10,7 @@
         Task SaveAsync();
 
         bool HasChanges();
+
+        void Add(Friend friend);
     }
 }

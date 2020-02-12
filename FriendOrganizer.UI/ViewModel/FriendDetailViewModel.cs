@@ -22,6 +22,7 @@
             this.eventAggregator = eventAggregator;
 
             SaveCommand = new DelegateCommand(OnSaveExecute, OnSaveCanExecute);
+            DeleteCommand = new DelegateCommand(OnDeleteExecute);
         }
 
         public FriendWrapper Friend
@@ -52,6 +53,8 @@
 
 
         public ICommand SaveCommand { get; }
+
+        public ICommand DeleteCommand { get; }
 
         public async Task LoadAsync(int? friendId)
         {
@@ -107,6 +110,12 @@
             var friend = new Friend();
             friendRepository.Add(friend);
             return friend;
+        }
+
+        private async void OnDeleteExecute()
+        {
+            friendRepository.Remove(Friend.Model);
+            await friendRepository.SaveAsync();
         }
     }
 }

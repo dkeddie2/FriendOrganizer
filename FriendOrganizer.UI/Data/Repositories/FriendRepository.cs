@@ -33,5 +33,10 @@
         {
             context.Friends.Add(friend);
         }
+
+        public void Remove(Friend model)
+        {
+            context.Friends.Remove(model);
+        }
     }
 }

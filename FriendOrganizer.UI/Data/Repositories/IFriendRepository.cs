@@ -12,5 +12,7 @@
         bool HasChanges();
 
         void Add(Friend friend);
+
+        void Remove(Friend model);
     }
 }

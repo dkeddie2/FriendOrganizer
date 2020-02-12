@@ -1,4 +1,4 @@
-﻿namespace FriendOrganizer.UI.Data
+﻿namespace FriendOrganizer.UI.Data.Lookups
 {
     using System;
     using System.Collections.Generic;
